@@ -13,6 +13,10 @@ public class SimpleTable <T> extends GenericTable<T>{
 	private SimpleTableListener listener;
 	private JTable table;
 	
+	public SimpleTable(ArrayList<T> rows, Column[] columns) {
+		this(rows, columns, false);
+	}
+	
 	public SimpleTable(ArrayList<T> rows, Column[] columns, boolean addIndex) {
 	
 		super(rows, columns, addIndex, GenericTableModel.SIMPLE_TABLE);

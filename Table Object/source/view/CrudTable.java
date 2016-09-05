@@ -15,6 +15,10 @@ public class CrudTable<T> extends GenericTable<T> {
 	private JTable table;
 	private CrudTableListener<T> listener;
 	
+	public CrudTable(ArrayList<T> rows, Column[] columns) {
+		this(rows, columns, false);
+	}
+	
 	public CrudTable(ArrayList<T> rows, Column[] columns, boolean addIndex) {
 		super(rows, addCrudColumns(columns), addIndex, GenericTableModel.CRUD_TABLE);
 		
