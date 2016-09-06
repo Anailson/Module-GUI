@@ -15,16 +15,13 @@ import javax.swing.table.TableCellRenderer;
 @SuppressWarnings("serial")
 public class GenericTableModel<T> extends AbstractTableModel {
 
-	private static final String GET = "get";
-	private static final String SET = "set";
-	private static final String IS = "is";
-	private static final String URL_ICON_DETAIL = "icons/icon_detail.png";
-	private static final String URL_ICON_EDIT = "icons/icon_edit.png";
-	private static final String URL_ICON_DELETE = "icons/icon_delete.png";
+	private static final String URL_ICON_DETAIL = "/icon_detail.png";
+	private static final String URL_ICON_EDIT = "/icon_edit.png";
+	private static final String URL_ICON_DELETE = "/icon_delete.png";
 
 	protected static final String CRUD_TABLE = "crud";
 	protected static final String SIMPLE_TABLE = "simple";
-	protected static final String COL_DETAIL = "Details";
+	protected static final String COL_DETAIL = "Detail";
 	protected static final String COL_EDIT = "Edit";
 	protected static final String COL_DELETE = "Delete";
 
@@ -67,15 +64,15 @@ public class GenericTableModel<T> extends AbstractTableModel {
 		}
 
 		if (typeTable == CRUD_TABLE && column > columns.length - 4) {
-			Object obj = crudColumns(column, columns.length);
+			Object obj = makeCrudColumns(column, columns.length);
 			if (obj != null) {
 				return obj;
 			}
 		}
 
-		T element = rows.get(row);
-		String className = element.getClass().getCanonicalName();
-		String methodName = getterName(columns[column]);
+		TableObject element = (TableObject) rows.get(row);
+		String className = element.getChildClass().getCanonicalName();
+		String methodName = element.getGetterName(columns[column].getField());
 
 		try {
 
@@ -88,7 +85,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 
 			e.printStackTrace();
 
-		} catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException | NullPointerException e) {
 
 			throw new IllegalStateException("Are you sure that field '" + columns[column].getField() + "' exists at "
 					+ className + " class?\n" + "The column names must match the class fields.");
@@ -104,12 +101,12 @@ public class GenericTableModel<T> extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int row, int column) {
 
-		String methodName = setterName(columns[column]);
-		T element = rows.get(row);
-		String className = element.getClass().getCanonicalName();
-		
+		TableObject element = (TableObject) rows.get(row);
+		String className = element.getChildClass().getCanonicalName();
+		String methodName = element.getSetterName(columns[column].getField());
+
 		try {
-			
+
 			Class<?> cls = (Class<?>) Class.forName(className);
 			Method method = cls.getMethod(methodName, columns[column].getDefaultType());
 			method.invoke(element, value);
@@ -136,8 +133,27 @@ public class GenericTableModel<T> extends AbstractTableModel {
 	}
 
 	@Override
-	public Class<?> getColumnClass(int column) {
-		return getColumn(column).getClassType();
+	public Class<?> getColumnClass(int columnIndex) {
+		
+		if(addIndex && columnIndex == 0){
+			return Integer.class; //Column #(index) it's Integer type
+		}
+
+		if (typeTable == CRUD_TABLE && columnIndex > getColumnCount() - 4) {
+			return ImageIcon.class; //Columns detail, edit & delete are ImageIcon type
+		}
+		
+		if (getRowCount() > 0) {
+
+			TableObject obj = (TableObject) rows.get(0);
+			Column column = getColumn(columnIndex);
+			
+			if (obj.getFieldType(column.getField()) != column.getDefaultType()) {
+				throw new IllegalStateException("Column type " + column.getField() + " must match as field type.");
+			}
+			return getColumn(columnIndex).getClassType();
+		}
+		return Object.class;
 	}
 
 	@Override
@@ -169,6 +185,25 @@ public class GenericTableModel<T> extends AbstractTableModel {
 		return element;
 	}
 
+	public T detail(int index) {
+		return rows.get(index);
+	}
+
+	public ArrayList<T> detail(int firstIndex, int lastIndex) {
+
+		ArrayList<T> details = new ArrayList<>();
+
+		for (int i = firstIndex; i < lastIndex; i++) {
+			details.add(rows.get(i));
+		}
+
+		return details;
+	}
+
+	public ArrayList<T> detailAll() {
+		return detail(0, getRowCount() - 1);
+	}
+
 	public T delete(int row) {
 		T e = rows.remove(row);
 		fireTableRowsDeleted(row, row);
@@ -190,45 +225,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 		return delete(0, getRowCount() - 1);
 	}
 
-	public T detail(int index) {
-		return rows.get(index);
-	}
-
-	public ArrayList<T> detail(int firstIndex, int lastIndex) {
-
-		ArrayList<T> details = new ArrayList<>();
-
-		for (int i = firstIndex; i < lastIndex; i++) {
-			details.add(rows.get(i));
-		}
-
-		return details;
-	}
-
-	public ArrayList<T> detailAll() {
-		return detail(0, getRowCount() - 1);
-	}
-
-	private String getterName(Column column) {
-		if (column.getDefaultType() == Boolean.class || column.getDefaultType() == boolean.class) {
-			return IS + methodName(column.getField());
-		}
-		return GET + methodName(column.getField());
-	}
-
-	private String setterName(Column column) {
-		return SET + methodName(column.getField());
-	}
-
-	private String methodName(String field) {
-
-		char oldChar = field.charAt(0);
-		char newChar = field.substring(0, 1).toUpperCase().charAt(0);
-
-		return field.replace(oldChar, newChar);
-	}
-
-	private Object crudColumns(int column, int length) {
+	private Object makeCrudColumns(int column, int length) {
 
 		final int detail = columns.length - 3;
 		final int edit = columns.length - 2;
@@ -276,22 +273,21 @@ public class GenericTableModel<T> extends AbstractTableModel {
 
 			setHorizontalAlignment(CENTER);
 
+			ImageIcon imageIcon = null;
 			switch (icon) {
 			case COL_DETAIL:
-				setIcon(new ImageIcon(URL_ICON_DETAIL));
+				imageIcon = new ImageIcon(getClass().getResource(URL_ICON_DETAIL));
 				break;
 			case COL_EDIT:
-				setIcon(new ImageIcon(URL_ICON_EDIT));
-				break;
-			case COL_DELETE:
-				setIcon(new ImageIcon(URL_ICON_DELETE));
+				imageIcon = new ImageIcon(getClass().getResource(URL_ICON_EDIT));
 				break;
 
-			default:
-				super.setValue(value);
-				System.out.println("Default: " + value);
+			case COL_DELETE:
+
+				imageIcon = new ImageIcon(getClass().getResource(URL_ICON_DELETE));
 				break;
 			}
+			setIcon(imageIcon);
 		}
 	}
 }

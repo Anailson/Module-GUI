@@ -70,9 +70,9 @@ public class CrudTable<T> extends GenericTable<T> {
 		final int EDIT = length - 2;
 		final int DELETE = length - 1;
 
-		cols[DETAIL] = new Column(GenericTableModel.COL_DETAIL, 60, true, ImageIcon.class);
-		cols[EDIT] = new Column(GenericTableModel.COL_EDIT, 60, true, ImageIcon.class);
-		cols[DELETE] = new Column(GenericTableModel.COL_DELETE, 60, true, ImageIcon.class);
+		cols[DETAIL] = new Column(GenericTableModel.COL_DETAIL, 55, false, ImageIcon.class);
+		cols[EDIT] = new Column(GenericTableModel.COL_EDIT, 55, false, ImageIcon.class);
+		cols[DELETE] = new Column(GenericTableModel.COL_DELETE, 55, false, ImageIcon.class);
 		return cols;
 	}
 	
@@ -101,14 +101,15 @@ public class CrudTable<T> extends GenericTable<T> {
 				T obj = detail(row);
 				
 				if(column == detail){
-
+					
 					listener.detail(row);
 					
 				} else if(column == edit){
-					
+
 					listener.edit(row, obj);
 					
 				} else if(column == delete){
+
 					listener.delete(row, obj);
 				}
 			}

@@ -98,7 +98,7 @@ public class GenericTable<T>{
 
 			Column column = columns[i];
 
-			if (column.getWidth() != -1) {
+			if (column.getWidth() != Column.MIN_WIDTH) {
 				
 				TableColumn col = table.getColumnModel().getColumn(i);
 				col.setMaxWidth(column.getWidth());
