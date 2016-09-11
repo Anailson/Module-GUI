@@ -160,7 +160,7 @@ public class FloatSideBarFactory {
 			//setAlwaysOnTop(true);
 			setUndecorated(true);
 		}
-
+		
 		protected void generate(SideMenu menu) {
 				
 			if (menu.hasSubMenu()) {
