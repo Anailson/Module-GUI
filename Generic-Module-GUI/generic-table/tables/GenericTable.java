@@ -1,5 +1,5 @@
 // A hora do Rush, O livro de Eli
-package view;
+package tables;
 
 import java.util.ArrayList;
 
@@ -7,20 +7,23 @@ import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
+import annotation.Column;
+import column.ObjectColumn;
+import genericObject.GenericField;
+import genericObject.GenericObject;
+import model.GenericTableModel;
+
 public class GenericTable<T> {
 
 	private JTable table;
 	private GenericTableModel<T> model;
-	private GenericObject generic;
-	private boolean addIndexAtColumns;
 
 	protected GenericTable(Class<?> clss, ArrayList<T> rows, boolean addIndex, String typeTable) {
 
-		this.generic = new GenericObject(clss);
-		this.addIndexAtColumns = addIndex;
-		Column[] columns = generateColumns(clss, typeTable);
+		GenericObject generic = new GenericObject(Column.class,clss);
+		ObjectColumn[] columns = generateColumns(generic, clss, addIndex, typeTable);
 
-		model = new GenericTableModel<T>(generic, rows, columns, addIndexAtColumns, typeTable);
+		model = new GenericTableModel<T>(generic, rows, columns, addIndex, typeTable);
 		table = new JTable(model);
 		table.getTableHeader().setReorderingAllowed(false);
 
@@ -71,22 +74,22 @@ public class GenericTable<T> {
 		return model.deleteAll();
 	}
 
-	private Column[] generateColumns(Class<?> clss, String typeTable) {
+	private ObjectColumn[] generateColumns(GenericObject generic, Class<?> clss, boolean addIndex, String typeTable) {
 
-		Column[] columns = generic.getColumns();
-		columns = addIndexAtColumns(columns);
+		ObjectColumn[] columns = getColumns(generic);
+		columns = addIndexAtColumns(addIndex, columns);
 		columns = addCrudColumns(columns, typeTable);
 
 		return columns;
 	}
 
-	private Column[] addIndexAtColumns(Column[] columns) {
+	private ObjectColumn[] addIndexAtColumns(boolean addIndexAtColumns, ObjectColumn[] columns) {
 
-		Column[] cols = null;
+		ObjectColumn[] cols = null;
 		if (addIndexAtColumns) {
-			cols = new Column[columns.length + 1];
+			cols = new ObjectColumn[columns.length + 1];
 
-			cols[0] = new Column("#", "#", 40, false, Integer.class);
+			cols[0] = new ObjectColumn("#", "#", 40, false, Integer.class);
 
 			for (int i = 0; i < columns.length; i++) {
 				cols[i + 1] = columns[i];
@@ -96,13 +99,13 @@ public class GenericTable<T> {
 		return columns;
 	}
 
-	private Column[] addCrudColumns(Column[] columns, String typeTable) {
-		Column[] cols = null;
+	private ObjectColumn[] addCrudColumns(ObjectColumn[] columns, String typeTable) {
+		ObjectColumn[] cols = null;
 
 		if (typeTable == GenericTableModel.CRUD_TABLE) {
 
 			int length = columns.length + 3;
-			cols = new Column[length];
+			cols = new ObjectColumn[length];
 
 			for (int i = 0; i < columns.length; i++) {
 				cols[i] = columns[i];
@@ -115,22 +118,22 @@ public class GenericTable<T> {
 			String edit = GenericTableModel.COL_EDIT;
 			String delete = GenericTableModel.COL_DELETE;
 
-			cols[DETAIL] = new Column(detail, detail, 55, false, ImageIcon.class);
-			cols[EDIT] = new Column(edit, edit, 55, false, ImageIcon.class);
-			cols[DELETE] = new Column(delete, delete, 55, false, ImageIcon.class);
+			cols[DETAIL] = new ObjectColumn(detail, detail, 55, false, ImageIcon.class);
+			cols[EDIT] = new ObjectColumn(edit, edit, 55, false, ImageIcon.class);
+			cols[DELETE] = new ObjectColumn(delete, delete, 55, false, ImageIcon.class);
 
 			return cols;
 		}
 		return columns;
 	}
 
-	private void setColumnsWidth(Column[] columns) {
+	private void setColumnsWidth(ObjectColumn[] columns) {
 
 		for (int i = 0; i < columns.length; i++) {
 
-			Column column = columns[i];
+			ObjectColumn column = columns[i];
 
-			if (column.getWidth() != Column.MIN_WIDTH) {
+			if (column.getWidth() != ObjectColumn.MIN_WIDTH) {
 
 				TableColumn col = table.getColumnModel().getColumn(i);
 				col.setMaxWidth(column.getWidth());
@@ -138,5 +141,20 @@ public class GenericTable<T> {
 				// col.setCellRenderer(GenericTableModel.DEFAULT);
 			}
 		}
+	}
+	
+	private ObjectColumn[] getColumns(GenericObject generic){
+		
+		ArrayList<GenericField> fields = generic.getGenericFields();
+		ObjectColumn [] columns = new ObjectColumn[fields.size()];
+		
+		for (int i = 0; i < fields.size(); i++) {
+			GenericField field = fields.get(i);
+			Column colum = (Column) field.getAnnotation();
+			
+			columns[i] = new ObjectColumn(field.getFieldName(), colum.title(), colum.width(), colum.editable(),
+					field.getFieldType());
+		}
+		return columns;
 	}
 }

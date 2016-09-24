@@ -1,8 +1,8 @@
-package view;
+package column;
 
 import java.security.InvalidParameterException;
 
-public class Column {
+public class ObjectColumn {
 	
 	public final static int MIN_WIDTH = 0;
 	private String title;
@@ -14,35 +14,36 @@ public class Column {
 	// TODO Refator and remove the field Class<?> cls. It's possible using
 	// FieldObject?
 
-	protected Column(String field, String title, int width, boolean editable, Class<?> cls) {
+	public ObjectColumn(String field, String title, int width, boolean editable, Class<?> cls) {
 		
-		if(field == null || cls == null){
-			throw new InvalidParameterException("Parameters field & cls cannot be null. They must match with fields of your object class.");
-		}
 		if(width < MIN_WIDTH){
 			throw new InvalidParameterException("Width of column '" + field + "' must be >= 0.");
 		}
 		
+		if(title.equals("")){
+			this.title = field;
+		} else {
+			this.title = title;
+		}
 		this.field = field;
-		this.title = title;
 		this.width = width;
 		this.type = cls;
 		this.editable = editable;
 	}
 
-	protected String getTitle() {
+	public String getTitle() {
 		return title.toUpperCase();
 	}
-
-	protected String getField() {
+	
+	public String getField() {
 		return field;
 	}
 	
-	protected int getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
-	protected Class<?> getClassType() {
+	public Class<?> getClassType() {
 
 		if (type.isAssignableFrom(int.class)) {
 			return Integer.class;
@@ -62,12 +63,12 @@ public class Column {
 		return type;
 	}
 
-	protected Class<?> getDefaultType() {
+	public Class<?> getDefaultType() {
 
 		return type;
 	}
 
-	protected boolean isEditable() {
+	public boolean isEditable() {
 		return editable;
 	}
 

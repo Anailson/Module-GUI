@@ -1,4 +1,4 @@
-package view;
+package model;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,31 +12,34 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import column.ObjectColumn;
+import genericObject.GenericObject;
+
 @SuppressWarnings("serial")
 public class GenericTableModel<T> extends AbstractTableModel {
 
-	private static final String URL_ICON_DETAIL = "/icon_detail.png";
-	private static final String URL_ICON_EDIT = "/icon_edit.png";
-	private static final String URL_ICON_DELETE = "/icon_delete.png";
+	private static final String URL_ICON_DETAIL = "/icons/icon_detail.png";
+	private static final String URL_ICON_EDIT = "/icons/icon_edit.png";
+	private static final String URL_ICON_DELETE = "/icons/icon_delete.png";
 
-	protected static final String CRUD_TABLE = "crud";
-	protected static final String SIMPLE_TABLE = "simple";
-	protected static final String COL_DETAIL = "Detail";
-	protected static final String COL_EDIT = "Edit";
-	protected static final String COL_DELETE = "Delete";
+	public static final String CRUD_TABLE = "crud";
+	public static final String SIMPLE_TABLE = "simple";
+	public static final String COL_DETAIL = "Detail";
+	public static final String COL_EDIT = "Edit";
+	public static final String COL_DELETE = "Delete";
 
-	protected static final IconCellRenderer DEFAULT = new IconCellRenderer();
-	protected static final IconCellRenderer ICON_DETAIL = new IconCellRenderer(COL_DETAIL);
-	protected static final IconCellRenderer ICON_EDIT = new IconCellRenderer(COL_EDIT);
-	protected static final IconCellRenderer ICON_DELETE = new IconCellRenderer(COL_DELETE);
+	public static final IconCellRenderer DEFAULT = new IconCellRenderer();
+	public static final IconCellRenderer ICON_DETAIL = new IconCellRenderer(COL_DETAIL);
+	public static final IconCellRenderer ICON_EDIT = new IconCellRenderer(COL_EDIT);
+	public static final IconCellRenderer ICON_DELETE = new IconCellRenderer(COL_DELETE);
 
 	private GenericObject generic;
-	private Column[] columns;
+	private ObjectColumn[] columns;
 	private ArrayList<T> rows;
 	private boolean addIndex;
 	private String typeTable;
 
-	protected GenericTableModel(GenericObject generic, ArrayList<T> rows, Column[] columns, boolean addIndex, String typTable) {
+	public GenericTableModel(GenericObject generic, ArrayList<T> rows, ObjectColumn[] columns, boolean addIndex, String typTable) {
 
 		this.generic = generic;
 		this.rows = rows;
@@ -45,7 +48,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 		this.typeTable = typTable;
 	}
 
-	protected Column getColumn(int column) {
+	protected ObjectColumn getColumn(int column) {
 		return columns[column];
 	}
 
@@ -147,7 +150,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 			return ImageIcon.class; 
 		}
 
-		Column column = getColumn(columnIndex);
+		ObjectColumn column = getColumn(columnIndex);
 
 		if (generic.getFieldType(column.getField()) != column.getDefaultType()) {
 			throw new IllegalStateException("Column type " + column.getField() + " must match as field type.");

@@ -1,4 +1,4 @@
-package view;
+package tables;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -8,6 +8,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
 import interfaces.CrudTableListener;
+import model.GenericTableModel;
 
 public class CrudTable<T> extends GenericTable<T> {
 	

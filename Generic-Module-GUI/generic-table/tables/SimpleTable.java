@@ -1,4 +1,4 @@
-package view;
+package tables;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JTable;
 
 import interfaces.SimpleTableListener;
+import model.GenericTableModel;
 
 public class SimpleTable <T> extends GenericTable<T>{
 	

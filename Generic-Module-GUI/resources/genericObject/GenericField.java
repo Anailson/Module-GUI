@@ -1,63 +1,47 @@
-package view;
+package genericObject;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import interfaces.Column;
-
 public class GenericField {
-	
+
 	private static final String GET = "get";
 	private static final String SET = "set";
 	private static final String IS = "is";
 
+	private Class<?> childClass;
 	private Field field;
 	private Method getter, setter;
-	private Column column;
+	private Annotation annotationType;
 	private String partialName;
 
-	protected GenericField(Class<?> childClass, Field field) {
+	protected GenericField(Class<?> childClass, Class<? extends Annotation> annotation, Field field) {
 
+		this.childClass = childClass;
 		this.field = field;
 		this.getter = this.setter = null;
-		this.column = null;
+		this.annotationType = null;
 		this.partialName = partialName();
 
-		if (hasAnnotationColumn()) {
+		if (hasAnnotation(annotation)) {
 
-			verifyDefaultConstrutor(childClass);
-			veirfyDefaultMethods(childClass);
+			verifyDefaultConstrutor();
+			veirfyDefaultMethods();
 		}
 	}
 
-	protected String getName() {
+	public String getFieldName() {
 		return field.getName();
 	}
-	
-	protected String getTitle(){
 
-		if(column.title().equals("")){
-			return getName();
-		}
-		return column.title();
-	}
-	
-	protected int getWidth(){
-		
-		return column.width();
-	}
-	
-	protected boolean isEditable(){
-		return column.editable();
-	}
-
-	protected Class<?> getFieldType() {
+	public Class<?> getFieldType() {
 		return field.getType();
 	}
-	
-	protected Column getColumn(){
-		return this.column;
+
+	public Annotation getAnnotation() {
+		return this.annotationType;
 	}
 
 	protected String getGetterName() {
@@ -83,7 +67,7 @@ public class GenericField {
 	}
 
 	protected boolean hasColumn() {
-		if (column != null) {
+		if (annotationType != null) {
 			return true;
 		}
 		return false;
@@ -103,16 +87,22 @@ public class GenericField {
 		return false;
 	}
 
-	private boolean hasAnnotationColumn() {
-		
-		if (field.isAnnotationPresent(Column.class)) {
-			column = field.getAnnotation(Column.class);
-			return true;
+	private boolean hasAnnotation(Class<? extends Annotation> annotation) {
+
+		if (field.isAnnotationPresent(annotation)) {
+
+			Annotation[] annotations = field.getAnnotations();
+			for (Annotation a : annotations) {
+				if (a.annotationType() == annotation) {
+					this.annotationType = a;
+					return true;
+				}
+			}
 		}
 		return false;
 	}
 
-	private void verifyDefaultConstrutor(Class<?> childClass) {
+	private void verifyDefaultConstrutor() {
 
 		Constructor<?>[] construtors = childClass.getDeclaredConstructors();
 		if (construtors.length > 1) {
@@ -135,7 +125,7 @@ public class GenericField {
 		}
 	}
 
-	private void veirfyDefaultMethods(Class<?> childClass) {
+	private void veirfyDefaultMethods() {
 
 		Method[] methods = childClass.getDeclaredMethods();
 
@@ -211,5 +201,11 @@ public class GenericField {
 		String oldChar = name.substring(0, 1);
 		String newChar = oldChar.toUpperCase();
 		return name.replaceFirst(oldChar, newChar);
+	}
+
+	@Override
+	public String toString() {
+		return "[Class=" + childClass.getCanonicalName() + ", Type=" + field.getType().getName() + " Field="
+				+ field.getName() + "]";
 	}
 }
