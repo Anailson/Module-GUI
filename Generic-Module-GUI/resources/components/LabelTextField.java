@@ -9,9 +9,9 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 
 public class LabelTextField extends LabelComponent{
-		
-	public LabelTextField(int gap, String label, String [] values) {
-		super(gap, label, new HintTextField(values));
+			
+	public LabelTextField(int minWidth, String label, String [] values) {
+		super(minWidth, label, new HintTextField(values));
 	}
 
 	private static class HintTextField extends JTextField implements FocusListener {

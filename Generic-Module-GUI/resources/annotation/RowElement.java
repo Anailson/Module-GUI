@@ -35,13 +35,7 @@ public @interface RowElement {
 
 	int index();
 
-	String title();
-
 	boolean required();
 
 	boolean resizable();
-
-	String typeClass();
-
-	String[] values();
 }

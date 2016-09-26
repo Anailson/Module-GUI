@@ -32,6 +32,10 @@ public class GenericField {
 		}
 	}
 
+	public Field getField(){
+		return field;
+	}
+	
 	public String getFieldName() {
 		return field.getName();
 	}

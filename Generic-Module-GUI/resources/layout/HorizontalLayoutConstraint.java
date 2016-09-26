@@ -1,31 +1,55 @@
 package layout;
 
+import java.lang.annotation.Annotation;
+
+import annotation.RowElement;
+
 public class HorizontalLayoutConstraint {
 
-	private int row;
-	private boolean resizable;
-	private boolean required;
-
-	public HorizontalLayoutConstraint(int row) {
-		this(row, false, false);
+	private RowElement element;
+	
+	public HorizontalLayoutConstraint(int row){
+		this(rowElement(row));
 	}
 
-	public HorizontalLayoutConstraint(int row,  boolean required, boolean resizable) {
-
-		this.row = row;
-		this.required = required;
-		this.resizable = resizable;
+	public HorizontalLayoutConstraint(RowElement element) {
+		this.element = element;
 	}
 
 	public int getRow() {
-		return row;
+		return element.index();
 	}
 
 	public boolean isResizable() {
-		return resizable;
+		return element.resizable();
 	}
 
 	public boolean isRequired() {
-		return required;
+		return element.required();
+	}
+	
+	private static RowElement rowElement(int row){
+		
+		return new RowElement(){
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return RowElement.class;
+			}
+			
+			@Override
+			public int index() {
+				return row;
+			}
+			
+			@Override
+			public boolean required() {
+				return false;
+			}
+			
+			@Override
+			public boolean resizable() {
+				return false;
+			}
+		};
 	}
 }

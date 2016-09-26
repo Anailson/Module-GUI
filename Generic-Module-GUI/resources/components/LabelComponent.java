@@ -11,26 +11,28 @@ public class LabelComponent extends JComponent {
 
 	private JComponent field;
 
-	public LabelComponent(int gap, String label, JComponent field) {
+	public LabelComponent(int minWidth, String label, JComponent field) {
 		this.field = field;
-		
-		addComponents(gap, label);
+
+		addComponents(minWidth, label);
 	}
 
 	public JComponent getField() {
 		return field;
 	}
-	
-	private void addComponents(int gap, String text){
+
+	private void addComponents(int minWidth, String text) {
 
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		
+
 		JLabel label = new JLabel(text);
-		int width = label.getPreferredSize().width + gap / 5;
-		label.setPreferredSize(new Dimension(width, label.getPreferredSize().height));
+		label.setPreferredSize(new Dimension(label.getPreferredSize().width + 5, label.getPreferredSize().height));
 		
+		if (minWidth > 0){
+			field.setPreferredSize(new Dimension(minWidth, field.getPreferredSize().height));
+		}
+
 		this.add(label);
 		this.add(field);
-		
 	}
 }
