@@ -10,11 +10,29 @@ import javax.swing.JRadioButton;
 
 @SuppressWarnings("serial")
 public class LabelRadioButton extends LabelComponent{
+
+	private  GroupRadioButton radioButtons;
 	
 	public LabelRadioButton(int minWidth, String label, String[] values) {
-		super(minWidth, label, new GroupRadioButton(values));
+		super(minWidth, label, values);
+	}
+	
+	@Override
+	public void clear() {
+		radioButtons.clear();
+	}
+	
+	@Override
+	public Object save() {
+
+		return null;
 	}
 
+	@Override
+	public JComponent getComponent(String [] values){
+		return radioButtons = new GroupRadioButton(values);
+	}
+	
 	private static class GroupRadioButton extends JComponent{		
 		
 		private ButtonGroup group;
@@ -39,6 +57,11 @@ public class LabelRadioButton extends LabelComponent{
 				button.setPreferredSize(new Dimension(maxWidth, button.getPreferredSize().height));
 				add(button);
 			}
-		}		
+		}
+		
+		public void clear(){
+			
+			group.clearSelection();
+		}
 	}
 }

@@ -8,10 +8,10 @@ import java.awt.LayoutManager2;
 import java.util.HashMap;
 
 public class HorizontalLayout implements LayoutManager2 {
-
+	private static int maxWidthRow;
 	private boolean sizeUnknown;
 	private int gap, lastRow, nRows;
-	private int prefWidth, prefHeight, minWidth, minHeight, maxHeightRow, maxWidthRow;
+	private int prefWidth, prefHeight, minWidth, minHeight, maxHeightRow;
 	private HashMap<Component, HorizontalLayoutConstraint> constraints;
 
 	public HorizontalLayout(int gap) {
@@ -35,9 +35,6 @@ public class HorizontalLayout implements LayoutManager2 {
 			if (lastRow != constraint.getRow()) {
 				nRows = (lastRow = constraint.getRow()) + 1;
 			}
-
-		} else {
-			constraints.put(parent, new HorizontalLayoutConstraint(lastRow));
 		}
 	}
 
@@ -66,7 +63,7 @@ public class HorizontalLayout implements LayoutManager2 {
 
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
-		
+
 		if (sizeUnknown) {
 			setSize(parent);
 		}
@@ -80,7 +77,7 @@ public class HorizontalLayout implements LayoutManager2 {
 
 	@Override
 	public void layoutContainer(Container parent) {
-
+		
 		if (prefWidth != parent.getWidth()) {
 			resizeComponents(parent);
 		}
@@ -90,14 +87,14 @@ public class HorizontalLayout implements LayoutManager2 {
 		for (Component comp : parent.getComponents()) {
 
 			if (comp.isVisible()) {
-				HorizontalLayoutConstraint layConst = constraints.get(comp);
+				HorizontalLayoutConstraint constraint = constraints.get(comp);
 
-				if (row != layConst.getRow()) { // next line...
-					row = layConst.getRow();
+				if (row != constraint.getRow()) { // next line...
+					row = constraint.getRow();
 					x = gap;
 					y = gap + (maxHeightRow + gap) * row;
 				}
-				
+
 				int yFake = y + Math.subtractExact(maxHeightRow, comp.getPreferredSize().height) / 2;
 				
 				Dimension d = comp.getPreferredSize();
@@ -109,7 +106,7 @@ public class HorizontalLayout implements LayoutManager2 {
 
 	@Override
 	public float getLayoutAlignmentX(Container parent) {
-		return Component.LEFT_ALIGNMENT;
+		return Component.RIGHT_ALIGNMENT;
 	}
 
 	@Override
@@ -123,23 +120,32 @@ public class HorizontalLayout implements LayoutManager2 {
 
 	private void setSize(Container parent) {
 
-		prefHeight = (maxHeightRow + gap) * nRows;
-		prefWidth = parent.getComponentCount() * gap;// tem que corrigir
+
+		int maxWidth = 0, row = -1;
 
 		for (Component c : parent.getComponents()) {
 
 			if (c.isVisible()) {
 				
-				prefWidth += c.getPreferredSize().width;
+				if (row != constraints.get(c).getRow()) {					
+					row = constraints.get(c).getRow();
+					maxWidth = gap;
+				}
+
+				maxWidth += c.getPreferredSize().width + gap;
+				maxWidthRow = Math.max(maxWidth, maxWidthRow);
 			}
 		}
+
+		minHeight = prefHeight = (maxHeightRow + gap) * nRows;
+		minWidth = prefWidth = maxWidthRow = Math.max(maxWidth, maxWidthRow);
 		minHeight = prefHeight;
-		minWidth = (prefWidth += gap);
 		sizeUnknown = false;
 	}
 
 	private void resizeComponents(Container parent) {
 
+		
 		for (Component comp : parent.getComponents()) {
 
 			HorizontalLayoutConstraint cons = constraints.get(comp);
@@ -147,9 +153,14 @@ public class HorizontalLayout implements LayoutManager2 {
 			if (cons.isResizable()) {
 
 				if (comp.isVisible()) {
+					
+					if(cons.getMinWidth() == 0){
+						int width = prefWidth - 2 * gap;
+						comp.setPreferredSize(new Dimension(width, comp.getPreferredSize().height));
+					} 
 
 					Dimension d = comp.getPreferredSize();
-					int expectedWidth = getExpectedWidth( d.width, parent.getWidth(), cons.getRow());
+					int expectedWidth = getExpectedWidth(d.width, parent.getWidth(), cons.getRow());
 
 					if (expectedWidth > comp.getMinimumSize().width) {
 						d.width = expectedWidth;
@@ -157,6 +168,7 @@ public class HorizontalLayout implements LayoutManager2 {
 						d.width = comp.getMinimumSize().width;
 					}
 					comp.setPreferredSize(d);
+					
 				}
 			}
 		}
@@ -184,6 +196,6 @@ public class HorizontalLayout implements LayoutManager2 {
 	}
 
 	private int getAddWidth(int width) {
-		return Math.subtractExact(width, prefWidth);		
+		return Math.subtractExact(width, prefWidth);
 	}
 }

@@ -10,11 +10,28 @@ import javax.swing.JComponent;
 @SuppressWarnings("serial")
 public class LabelCheckBox extends LabelComponent{
 
+	private GroupCheckBox checkBoxs;
+	
 	public LabelCheckBox(int minWidth, String label, String[] values) {
-		super(minWidth, label, new GroupCheckBox(values));
+		super(minWidth, label, values);
 	}
 	
-	private static class GroupCheckBox extends JComponent{
+	@Override
+	public Object save() {
+		return null;
+	}
+
+	@Override
+	public void clear() {
+		checkBoxs.clear();
+	}
+	
+	@Override
+	protected JComponent getComponent(String[] values) {
+		return checkBoxs = new GroupCheckBox(values); 
+	}
+	
+	private class GroupCheckBox extends JComponent{
 		
 		private ArrayList<JCheckBox> checks;
 		
@@ -33,6 +50,13 @@ public class LabelCheckBox extends LabelComponent{
 				check.setPreferredSize(new Dimension(maxWidth, check.getPreferredSize().height));
 				add(check);
 			}
-		}		
-	}		
+		}
+		
+		public void clear(){
+			
+			for(JCheckBox check : checks){
+				check.setSelected(false);
+			}
+		}
+	}
 }

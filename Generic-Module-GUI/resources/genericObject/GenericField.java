@@ -48,7 +48,7 @@ public class GenericField {
 		return this.annotationType;
 	}
 
-	protected String getGetterName() {
+	public String getGetterName() {
 		String sign = GET;
 		if (field.getType() == boolean.class || field.getType() == Boolean.class) {
 			sign = IS;
@@ -57,7 +57,7 @@ public class GenericField {
 		return sign + partialName;
 	}
 
-	protected String getSetterName() {
+	public String getSetterName() {
 		return SET + partialName;
 	}
 

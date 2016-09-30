@@ -1,26 +1,31 @@
 package components;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
-public class LabelComponent extends JComponent {
+public abstract class LabelComponent extends JComponent {
 
 	private JComponent field;
 
-	public LabelComponent(int minWidth, String label, JComponent field) {
-		this.field = field;
+	public LabelComponent(int minWidth, String label, String [] values) {
+		this.field = getComponent(values);
 
+		setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		addComponents(minWidth, label);
 	}
 
-	public JComponent getField() {
-		return field;
-	}
-
+	public abstract Object save();
+	
+	public abstract void clear();
+	
+	protected abstract JComponent getComponent(String [] values); 
+	
 	private void addComponents(int minWidth, String text) {
 
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

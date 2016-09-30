@@ -4,17 +4,36 @@ import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 
 public class LabelTextField extends LabelComponent{
 			
+	private HintTextField textField;
+	
 	public LabelTextField(int minWidth, String label, String [] values) {
-		super(minWidth, label, new HintTextField(values));
+		super(minWidth, label, values);
+	}
+	
+	@Override
+	public Object save() {
+		
+		return null;
+	}
+	
+	@Override
+	public void clear() {
+		textField.clear();
+	}
+	
+	@Override
+	protected JComponent getComponent(String[] values) {
+		return textField = new HintTextField(values);
 	}
 
-	private static class HintTextField extends JTextField implements FocusListener {
+	private class HintTextField extends JTextField implements FocusListener {
 
 		private String hint;
 		private boolean showingHint;
@@ -26,6 +45,10 @@ public class LabelTextField extends LabelComponent{
 			setText(hint);
 			setForeground(Color.LIGHT_GRAY);
 			addFocusListener(this);
+		}
+		
+		public void clear(){
+			setText(hint);
 		}
 
 		@Override

@@ -4,12 +4,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class GenericObject {
+public class GenericClass {
 
 	private ArrayList<GenericField> fields;
 	private Class<?> childClass;
 
-	public GenericObject(Class<? extends Annotation> annotation, Class<?> childClass) {
+	public GenericClass(Class<? extends Annotation> annotation, Class<?> childClass) {
 
 		this.childClass = childClass;
 		this.fields = new ArrayList<>();

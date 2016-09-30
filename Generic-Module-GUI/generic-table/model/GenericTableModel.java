@@ -13,7 +13,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import column.ObjectColumn;
-import genericObject.GenericObject;
+import genericObject.GenericClass;
 
 @SuppressWarnings("serial")
 public class GenericTableModel<T> extends AbstractTableModel {
@@ -33,13 +33,13 @@ public class GenericTableModel<T> extends AbstractTableModel {
 	public static final IconCellRenderer ICON_EDIT = new IconCellRenderer(COL_EDIT);
 	public static final IconCellRenderer ICON_DELETE = new IconCellRenderer(COL_DELETE);
 
-	private GenericObject generic;
+	private GenericClass generic;
 	private ObjectColumn[] columns;
 	private ArrayList<T> rows;
 	private boolean addIndex;
 	private String typeTable;
 
-	public GenericTableModel(GenericObject generic, ArrayList<T> rows, ObjectColumn[] columns, boolean addIndex, String typTable) {
+	public GenericTableModel(GenericClass generic, ArrayList<T> rows, ObjectColumn[] columns, boolean addIndex, String typTable) {
 
 		this.generic = generic;
 		this.rows = rows;

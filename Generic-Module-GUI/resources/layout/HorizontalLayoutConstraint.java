@@ -3,53 +3,97 @@ package layout;
 import java.lang.annotation.Annotation;
 
 import annotation.RowElement;
+import annotation.RowElementSettings;
+import genericObject.GenericField;
 
 public class HorizontalLayoutConstraint {
 
 	private RowElement element;
+	private int minWidth;
+	private String title, typeClass;
+	private String[] values;
+
+	public HorizontalLayoutConstraint(GenericField field) {
+
+		RowElementSettings settings = getSettings(field);
+		
+		element = field.getField().getAnnotation(RowElement.class);
+		title = getTitle(settings);
+		typeClass = settings.typeClass();
+		minWidth = settings.minWidth();
+		values = settings.values();	
+	}
 	
-	public HorizontalLayoutConstraint(int row){
-		this(rowElement(row));
-	}
-
-	public HorizontalLayoutConstraint(RowElement element) {
-		this.element = element;
-	}
-
-	public int getRow() {
+	public int getRow(){
 		return element.index();
 	}
-
-	public boolean isResizable() {
+	
+	public boolean isResizable(){
 		return element.resizable();
 	}
-
-	public boolean isRequired() {
+	
+	public boolean isRequired(){
 		return element.required();
 	}
 	
-	private static RowElement rowElement(int row){
-		
-		return new RowElement(){
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RowElement.class;
-			}
-			
-			@Override
-			public int index() {
-				return row;
-			}
-			
-			@Override
-			public boolean required() {
-				return false;
-			}
-			
-			@Override
-			public boolean resizable() {
-				return false;
-			}
-		};
+	public String getTitle(){
+		return title;
+	}
+	
+	public String getTypeClass() {
+		return typeClass;
+	}
+	
+	public int getMinWidth() {
+		return minWidth;
+	}
+	
+	public String[] getValues() {
+		return values;
+	}
+
+	private RowElementSettings getSettings(GenericField field) {
+
+		RowElementSettings settings = field.getField().getAnnotation(RowElementSettings.class);
+
+		if (settings == null) {
+			settings = new RowElementSettings() {
+
+				@Override
+				public Class<? extends Annotation> annotationType() {
+					return RowElementSettings.class;
+				}
+
+				@Override
+				public int minWidth() {
+					return 0;
+				}
+
+				@Override
+				public String title() {
+					return field.getFieldName();
+				}
+
+				@Override
+				public String typeClass() {
+					return "";
+				}
+
+				@Override
+				public String[] values() {
+					return new String[] {};
+				}
+			};
+		}
+		return settings;
+	}
+
+	private String getTitle(RowElementSettings settings) {
+
+		if (element.required()) {
+			return settings.title() + " *";
+		}
+
+		return settings.title();
 	}
 }

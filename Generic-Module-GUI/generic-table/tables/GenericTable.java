@@ -9,8 +9,8 @@ import javax.swing.table.TableColumn;
 
 import annotation.Column;
 import column.ObjectColumn;
+import genericObject.GenericClass;
 import genericObject.GenericField;
-import genericObject.GenericObject;
 import model.GenericTableModel;
 
 public class GenericTable<T> {
@@ -20,7 +20,7 @@ public class GenericTable<T> {
 
 	protected GenericTable(Class<?> clss, ArrayList<T> rows, boolean addIndex, String typeTable) {
 
-		GenericObject generic = new GenericObject(Column.class,clss);
+		GenericClass generic = new GenericClass(Column.class,clss);
 		ObjectColumn[] columns = generateColumns(generic, clss, addIndex, typeTable);
 
 		model = new GenericTableModel<T>(generic, rows, columns, addIndex, typeTable);
@@ -74,7 +74,7 @@ public class GenericTable<T> {
 		return model.deleteAll();
 	}
 
-	private ObjectColumn[] generateColumns(GenericObject generic, Class<?> clss, boolean addIndex, String typeTable) {
+	private ObjectColumn[] generateColumns(GenericClass generic, Class<?> clss, boolean addIndex, String typeTable) {
 
 		ObjectColumn[] columns = getColumns(generic);
 		columns = addIndexAtColumns(addIndex, columns);
@@ -143,7 +143,7 @@ public class GenericTable<T> {
 		}
 	}
 	
-	private ObjectColumn[] getColumns(GenericObject generic){
+	private ObjectColumn[] getColumns(GenericClass generic){
 		
 		ArrayList<GenericField> fields = generic.getGenericFields();
 		ObjectColumn [] columns = new ObjectColumn[fields.size()];
