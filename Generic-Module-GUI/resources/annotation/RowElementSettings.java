@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RowElementSettings {
 
-	int minWidth();
+	int minWidth() default 0;
 
-	String title();
+	String title() default "";
 
-	String typeClass();
+	String typeClass() default "JTextField";
 
-	String[] values();
+	String[] values() default {};
 }

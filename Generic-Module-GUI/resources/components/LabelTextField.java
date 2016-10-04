@@ -7,25 +7,32 @@ import java.awt.event.FocusListener;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import genericObject.GenericField;
+
 @SuppressWarnings("serial")
 
 public class LabelTextField extends LabelComponent{
 			
 	private HintTextField textField;
 	
-	public LabelTextField(int minWidth, String label, String [] values) {
-		super(minWidth, label, values);
+	public LabelTextField(GenericField gField, int minWidth, String label, String [] values) {
+		super(gField, minWidth, label, values);
 	}
 	
 	@Override
 	public Object save() {
-		
-		return null;
+		return textField.save();
 	}
 	
 	@Override
 	public void clear() {
 		textField.clear();
+	}
+	
+	@Override
+	protected boolean isEmpty() {
+
+		return textField.isEmpty();
 	}
 	
 	@Override
@@ -40,20 +47,27 @@ public class LabelTextField extends LabelComponent{
 
 		public HintTextField(String [] values) {
 			hint = getHint(values);
-			showingHint = true;
-
-			setText(hint);
-			setForeground(Color.LIGHT_GRAY);
+			clear();
 			addFocusListener(this);
 		}
 		
+		public String save(){
+			return getText();
+		}
+		
 		public void clear(){
+			showingHint = true;
 			setText(hint);
+			setForeground(Color.LIGHT_GRAY);
+		}
+		
+		public boolean isEmpty(){
+			return getText().isEmpty();
 		}
 
 		@Override
 		public void focusGained(FocusEvent e) {
-			setForeground(Color.BLACK);
+
 			if (getText().isEmpty()) {
 				setForeground(Color.BLACK);
 				showingHint = false;
@@ -65,9 +79,7 @@ public class LabelTextField extends LabelComponent{
 		public void focusLost(FocusEvent e) {
 
 			if (getText().isEmpty()) {
-				setForeground(Color.LIGHT_GRAY);
-				showingHint = true;
-				super.setText(hint);
+				clear();
 			}
 		}
 

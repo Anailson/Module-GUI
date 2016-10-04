@@ -2,6 +2,8 @@ package layout;
 
 import java.lang.annotation.Annotation;
 
+import javax.swing.JTextField;
+
 import annotation.RowElement;
 import annotation.RowElementSettings;
 import genericObject.GenericField;
@@ -17,7 +19,7 @@ public class HorizontalLayoutConstraint {
 
 		RowElementSettings settings = getSettings(field);
 		
-		element = field.getField().getAnnotation(RowElement.class);
+		element = (RowElement) field.getAnnotation();
 		title = getTitle(settings);
 		typeClass = settings.typeClass();
 		minWidth = settings.minWidth();
@@ -55,10 +57,11 @@ public class HorizontalLayoutConstraint {
 	private RowElementSettings getSettings(GenericField field) {
 
 		RowElementSettings settings = field.getField().getAnnotation(RowElementSettings.class);
-
+		
 		if (settings == null) {
+			
 			settings = new RowElementSettings() {
-
+				
 				@Override
 				public Class<? extends Annotation> annotationType() {
 					return RowElementSettings.class;
@@ -76,7 +79,7 @@ public class HorizontalLayoutConstraint {
 
 				@Override
 				public String typeClass() {
-					return "";
+					return JTextField.class.getSimpleName();
 				}
 
 				@Override

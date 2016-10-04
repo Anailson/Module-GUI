@@ -7,11 +7,12 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+
 public @interface Column {
 
-	String title();
+	String title() default "";
 
-	boolean editable();
+	boolean editable() default false;
 
-	int width();
+	int width() default 0;
 }

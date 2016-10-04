@@ -1,16 +1,15 @@
 package view;
 
-import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import controller.GenericFormController;
+import interfaces.GenericFormListener;
 
 @SuppressWarnings("serial")
 public class GenericForm extends JPanel {
@@ -22,7 +21,6 @@ public class GenericForm extends JPanel {
 
 		setLayout(new GridBagLayout());
 		setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 
 		this.btnSave = new JButton("Save");
 		this.btnClear = new JButton("Clear fields");
@@ -34,22 +32,28 @@ public class GenericForm extends JPanel {
 		btnCancel.addActionListener(controller);
 
 		generateSessionForms(gap, clss);
-		
+	}
+
+	public void addGenericFormListener(GenericFormListener listener) {
+		if (listener == null) {
+			throw new NullPointerException("GenericFormListener must be != null");
+		}
+		controller.addGenericFormListener(listener);
 	}
 
 	private void generateSessionForms(int gap, Class<?>[] classes) {
 
-		GridBagConstraints constraint = new GridBagConstraints();		
+		GridBagConstraints constraint = new GridBagConstraints();
 		constraint.fill = GridBagConstraints.HORIZONTAL;
 		constraint.weightx = 1;
 		constraint.insets = new Insets(gap, gap, 0, gap);
-		
+
 		int y = 0;
 		for (Class<?> cls : classes) {
 
 			constraint.gridy = y++;
-			SessionFormPanel sessionForm = new SessionFormPanel(gap, cls); 
-			add(sessionForm , constraint);
+			SessionFormPanel sessionForm = new SessionFormPanel(gap, cls);
+			add(sessionForm, constraint);
 			controller.addSessionForm(sessionForm);
 		}
 
@@ -60,11 +64,11 @@ public class GenericForm extends JPanel {
 
 	private JPanel sessionButtons() {
 		JPanel buttonPanel = new JPanel();
-		
+
 		buttonPanel.add(btnSave);
 		buttonPanel.add(btnClear);
 		buttonPanel.add(btnCancel);
-		
+
 		return buttonPanel;
 	}
 }

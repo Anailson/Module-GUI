@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Component;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
@@ -20,8 +19,8 @@ import components.LabelComponent;
 import components.LabelRadioButton;
 import components.LabelSpinner;
 import components.LabelTextField;
-import genericObject.GenericField;
 import genericObject.GenericClass;
+import genericObject.GenericField;
 import layout.HorizontalLayout;
 import layout.HorizontalLayoutConstraint;
 
@@ -30,23 +29,24 @@ public class SessionFormPanel extends JPanel {
 
 	private ArrayList<ArrayList<GenericField>> rowFields;
 	private Class<?> typeClass;
+	private GenericClass gClass;
 
-	protected SessionFormPanel(int gap, Class<?> typeClass) {
+	protected SessionFormPanel(int gap, Class<?> typeClss) {
 		super(new HorizontalLayout(gap));
-		setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		this.rowFields = new ArrayList<>();
-		this.typeClass = typeClass;
+		rowFields = new ArrayList<>();
+		typeClass = typeClss;
+		gClass = new GenericClass(RowElement.class, typeClass);
 
 		generateBorder(typeClass.getAnnotation(SessionForm.class));
-		ordenateRows(new GenericClass(RowElement.class, typeClass));
+		ordenateRows(gClass);
 		createSessionForm(typeClass);
 	}
-	
+
 	public Class<?> getTypeClass() {
 		return typeClass;
 	}
-	
+
 	public ArrayList<ArrayList<GenericField>> getRowFields() {
 		return rowFields;
 	}
@@ -86,7 +86,7 @@ public class SessionFormPanel extends JPanel {
 			for (GenericField field : fields) {
 
 				HorizontalLayoutConstraint constraint = new HorizontalLayoutConstraint(field);
-				add(getComponent(constraint), constraint);
+				add(getComponent(field, constraint), constraint);
 			}
 		}
 	}
@@ -96,28 +96,28 @@ public class SessionFormPanel extends JPanel {
 			setBorder(BorderFactory.createTitledBorder(((SessionForm) annotation).title()));
 		}
 	}
-	
-	private LabelComponent getComponent(HorizontalLayoutConstraint c) {
+
+	private LabelComponent getComponent(GenericField gField, HorizontalLayoutConstraint c) {
 
 		if (c.getTypeClass().equals("") || c.getTypeClass().equals(JTextField.class.getSimpleName())) {
 
-			return new LabelTextField(c.getMinWidth(), c.getTitle(), c.getValues());
+			return new LabelTextField(gField, c.getMinWidth(), c.getTitle(), c.getValues());
 
 		} else if (c.getTypeClass().equals(JComboBox.class.getSimpleName())) {
 
-			return new LabelComboBox(c.getMinWidth(), c.getTitle(), c.getValues());
+			return new LabelComboBox(gField, c.getMinWidth(), c.getTitle(), c.getValues());
 
 		} else if (c.getTypeClass().equals(JCheckBox.class.getSimpleName())) {
 
-			return new LabelCheckBox(c.getMinWidth(), c.getTitle(), c.getValues());
+			return new LabelCheckBox(gField, c.getMinWidth(), c.getTitle(), c.getValues());
 
 		} else if (c.getTypeClass().equals(JRadioButton.class.getSimpleName())) {
 
-			return new LabelRadioButton(c.getMinWidth(), c.getTitle(), c.getValues());
+			return new LabelRadioButton(gField, c.getMinWidth(), c.getTitle(), c.getValues());
 
 		} else if (c.getTypeClass().equals(JSpinner.class.getSimpleName())) {
 
-			return new LabelSpinner(c.getMinWidth(), c.getTitle());
+			return new LabelSpinner(gField, c.getMinWidth(), c.getTitle());
 
 		} else {
 			throw new IllegalArgumentException(

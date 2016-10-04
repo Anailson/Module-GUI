@@ -3,26 +3,35 @@ package components;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
 
+import genericObject.GenericField;
+
 @SuppressWarnings("serial")
 public class LabelSpinner extends LabelComponent {
 
 	private JSpinner spinner;
 	
-	public LabelSpinner(int minWidth, String label) {
+	public LabelSpinner(GenericField gField, int minWidth, String label) {
 
-		super(minWidth, label, new String[]{});		
+		super(gField, minWidth, label, new String[]{});		
 	}
 	
 	@Override
 	public Object save() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return spinner.getValue();
 	}
 	
 	@Override
 	public void clear() {
-		//TODO How to set default value
 		spinner.setValue(0);
+	}
+	
+	@Override
+	protected boolean isEmpty() {
+		if(spinner.getValue().equals(0)){
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

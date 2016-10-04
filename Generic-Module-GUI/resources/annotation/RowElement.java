@@ -35,7 +35,7 @@ public @interface RowElement {
 
 	int index();
 
-	boolean required();
+	boolean required() default false;
 
-	boolean resizable();
+	boolean resizable() default false;
 }
