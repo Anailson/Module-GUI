@@ -107,15 +107,18 @@ public class MainApp {
 	public JPanel getGenericForm() {
 
 		GenericForm form = new GenericForm(20, Address.class, Student.class);
-		
+
 		form.addGenericFormListener(new GenericFormListener() {
 
 			@Override
 			public void save(HashMap<String, Object> values) {
-				System.out.println("save " + values.get("code"));
-				System.out.println("save " + values.get("school"));
-				System.out.println("save " + ((boolean[])values.get("sports"))[2]);
-				System.out.println("save " + values.get("method"));
+				
+				System.out.println("save " + (String) values.get("code"));
+				System.out.println("save " + (Integer) values.get("name"));
+				System.out.println("save " + ((boolean[]) values.get("active"))[0]);
+				System.out.println("save " + (String) values.get("school"));
+				System.out.println("save " + ((boolean[]) values.get("sports"))[2]);
+				System.out.println("save " + (String) values.get("method"));
 			}
 
 			@Override
@@ -127,7 +130,7 @@ public class MainApp {
 			public void cancel() {
 				JOptionPane.showMessageDialog(null, "Do you really wants cancel this form?");
 			}
-			
+
 			@Override
 			public void isRequired() {
 				JOptionPane.showMessageDialog(null, "Some fields are required!");

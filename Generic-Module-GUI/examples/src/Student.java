@@ -17,7 +17,7 @@ public class Student {
 
 	@Column(width = 70)
 	@RowElement(index = 1, required = true)
-	@RowElementSettings(typeClass = "JComboBox", title = "Situação da escola", values = { "Publica",
+	@RowElementSettings(typeClass = "JComboBox", title = "SituaÃ§Ã£o da escola", values = { "Publica",
 			"Privada", "Mista"})
 	private String school; //
 
@@ -27,9 +27,9 @@ public class Student {
 			"Futebol", "Basquete", "Outro"})
 	private String[] sports;
 
-	@Column(title = "Incrição", editable = true, width = 50)
+	@Column(title = "IncriÃ§Ã£o", editable = true, width = 50)
 	@RowElement(index = 2, required = true)
-	@RowElementSettings(typeClass = "JRadioButton", title = "Incrição", values = { "ENEM", "Vestibular" })
+	@RowElementSettings(typeClass = "JRadioButton", title = "IncriÃ§Ã£o", values = { "ENEM", "Vestibular" })
 	private int method; //
 
 	@Column(title = "Is active?")

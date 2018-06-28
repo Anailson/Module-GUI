@@ -7,12 +7,14 @@ import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.util.HashMap;
 
+import components.LabelComponent;
+
 public class HorizontalLayout implements LayoutManager2 {
 	private static int maxWidthRow;
 	private boolean sizeUnknown;
 	private int gap, lastRow, nRows;
 	private int prefWidth, prefHeight, minWidth, minHeight, maxHeightRow;
-	private HashMap<Component, HorizontalLayoutConstraint> constraints;
+	private HashMap<LabelComponent, HorizontalLayoutConstraint> constraints;
 
 	public HorizontalLayout(int gap) {
 
@@ -30,7 +32,7 @@ public class HorizontalLayout implements LayoutManager2 {
 
 			maxHeightRow = Math.max(maxHeightRow, parent.getPreferredSize().height);
 			HorizontalLayoutConstraint constraint = (HorizontalLayoutConstraint) obj;
-			constraints.put(parent, constraint);
+			constraints.put((LabelComponent) parent, constraint);
 
 			if (lastRow != constraint.getRow()) {
 				nRows = (lastRow = constraint.getRow()) + 1;
@@ -83,11 +85,13 @@ public class HorizontalLayout implements LayoutManager2 {
 		}
 
 		int x = gap, y = gap, row = -1;
+		
+		for (Component component : parent.getComponents()) {
 
-		for (Component comp : parent.getComponents()) {
-
-			if (comp.isVisible()) {
-				HorizontalLayoutConstraint constraint = constraints.get(comp);
+			LabelComponent lComp = (LabelComponent) component;
+			
+			if (lComp.isVisible()) {
+				HorizontalLayoutConstraint constraint = constraints.get(lComp);
 
 				if (row != constraint.getRow()) { // next line...
 					row = constraint.getRow();
@@ -95,10 +99,10 @@ public class HorizontalLayout implements LayoutManager2 {
 					y = gap + (maxHeightRow + gap) * row;
 				}
 
-				int yFake = y + Math.subtractExact(maxHeightRow, comp.getPreferredSize().height) / 2;
+				int yFake = y + Math.subtractExact(maxHeightRow, lComp.getPreferredSize().height) / 2;
 				
-				Dimension d = comp.getPreferredSize();
-				comp.setBounds(x, yFake, d.width, d.height);
+				Dimension d = lComp.getPreferredSize();
+				lComp.setBounds(x, yFake, d.width, d.height);
 				x += d.width + gap;
 			}
 		}
@@ -119,20 +123,19 @@ public class HorizontalLayout implements LayoutManager2 {
 	}
 
 	private void setSize(Container parent) {
-
-
+		
 		int maxWidth = 0, row = -1;
 
-		for (Component c : parent.getComponents()) {
-
-			if (c.isVisible()) {
+		for (Component lComp : parent.getComponents()) {
+			
+			if (lComp.isVisible()) {
 				
-				if (row != constraints.get(c).getRow()) {					
-					row = constraints.get(c).getRow();
+				if (row != constraints.get(lComp).getRow()) {					
+					row = constraints.get(lComp).getRow();
 					maxWidth = gap;
 				}
 
-				maxWidth += c.getPreferredSize().width + gap;
+				maxWidth += lComp.getPreferredSize().width + gap;
 				maxWidthRow = Math.max(maxWidth, maxWidthRow);
 			}
 		}
@@ -176,6 +179,21 @@ public class HorizontalLayout implements LayoutManager2 {
 		prefWidth = Math.max(parent.getWidth(), minWidth);
 	}
 
+	private int getExpectedWidth(int compWidth, int parentWidth, int row) {
+		return compWidth + getAddWidth(parentWidth) / getResizableComponents(row);
+	}
+
+	private int getAddWidth(int width) {
+		int add = 0;
+		if(prefWidth > width){
+			add -= prefWidth - width;
+		} else {
+			add += width - prefWidth;
+		}
+		
+		return add;
+	}
+
 	private int getResizableComponents(int row) {
 
 		int nComps = 0;
@@ -189,13 +207,5 @@ public class HorizontalLayout implements LayoutManager2 {
 			}
 		}
 		return nComps;
-	}
-
-	private int getExpectedWidth(int compWidth, int parentWidth, int row) {
-		return compWidth + getAddWidth(parentWidth) / getResizableComponents(row);
-	}
-
-	private int getAddWidth(int width) {
-		return Math.subtractExact(width, prefWidth);
 	}
 }

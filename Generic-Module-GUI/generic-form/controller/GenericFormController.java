@@ -52,6 +52,7 @@ public class GenericFormController implements ActionListener {
 					required = true;
 				} else {
 					map.put(lComponent.getField().getFieldName(), lComponent.save());
+					lComponent.getLabel().setForeground(Color.BLACK);
 				}
 			}
 		}

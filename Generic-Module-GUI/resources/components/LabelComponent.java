@@ -35,6 +35,11 @@ public abstract class LabelComponent extends JComponent {
 		return label;
 	}
 	
+	@Override
+	public Dimension getMinimumSize() {
+		return super.getMinimumSize();
+	}
+	
 	public boolean isRequired(){ 
 		
 		RowElement element = (RowElement) gField.getAnnotation();
